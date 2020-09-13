@@ -50,8 +50,10 @@ class httpc:
                 request_body = file.read()
             if args.data or args.file:
                 http_client.set_request_body = request_body
-                http_client.set_request_headers = {"Content-Type": "application/json"}
-                http_client.set_request_headers = {"Content-Length": str(len(http_client.request_body))}
+                if "Content-Type" not in http_client.request_headers.keys():
+                    http_client.set_request_headers = {"Content-Type": "application/json"}
+                if "Content-Length" not in http_client.request_headers.keys():
+                    http_client.set_request_headers = {"Content-Length": str(len(http_client.request_body))}
 
         http_client.send_HTTP_request()
 

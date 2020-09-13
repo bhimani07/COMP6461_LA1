@@ -86,14 +86,18 @@ class http:
 
     @property
     def request_headers(self):
-        header = ""
-        for key, val in self._request_headers.items():
-            header = header + (key + ": " + val + "\n")
-        return header
+        return self._request_headers
 
     @request_headers.setter
     def set_request_headers(self, request_headers):
         self._request_headers.update(request_headers)
+
+    @property
+    def get_request_header_as_string(self):
+        header = ""
+        for key, val in self.request_headers.items():
+            header = header + (key + ": " + val + "\n")
+        return header
 
     @property
     def request_query_parameters(self):
@@ -165,7 +169,7 @@ class http:
 
         self.set_request = self.request_type.upper() + " " + self.path + \
                            self.request_query_parameters + " " + self.http_protocol + " \n" + \
-                           self.request_headers + "\n"
+                           self.get_request_header_as_string + "\n"
 
         if self.request_type == "post":
             if self.request_body:
