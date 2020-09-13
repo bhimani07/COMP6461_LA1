@@ -1,0 +1,23 @@
+{
+  "args": {}, 
+  "data": "{\n  \"author\": \"Kishan Bhimani\",\n  \"studentID\": \"40081118\",\n  \"university\": \"Concordia University\",\n  \"department\": \"Computer Science\",\n  \"course\": \"COMP6461\",\n  \"term\": \"Fall 2020\"\n}", 
+  "files": {}, 
+  "form": {}, 
+  "headers": {
+    "Content-Length": "182", 
+    "Content-Type": "application/json", 
+    "Host": "httpbin.org", 
+    "User-Agent": "httpc/1.0", 
+    "X-Amzn-Trace-Id": "Root=1-5f5d6e2c-4ed606637814d55d7492b441"
+  }, 
+  "json": {
+    "author": "Kishan Bhimani", 
+    "course": "COMP6461", 
+    "department": "Computer Science", 
+    "studentID": "40081118", 
+    "term": "Fall 2020", 
+    "university": "Concordia University"
+  }, 
+  "origin": "23.248.32.194", 
+  "url": "http://httpbin.org/post"
+}

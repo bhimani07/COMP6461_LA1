@@ -12,7 +12,7 @@ def sendRequest():
 class http:
     http_protocol = "HTTP/1.0"
 
-    def __init__(self, callback):
+    def __init__(self, print_response_from_http_client):
 
         # Server to send request to
         self._server = None
@@ -31,7 +31,7 @@ class http:
         self._response_headers = None
         self._response_data = None
 
-        self.callback = callback
+        self.print_response_from_http_client = print_response_from_http_client
 
     @property
     def server(self):
@@ -180,6 +180,6 @@ class http:
 
     def displayResults(self):
         if self._verbosity:
-            self.callback(self.response)
+            self.print_response_from_http_client(self.response, self.response_data)
         else:
-            self.callback(self.response_data)
+            self.print_response_from_http_client(self.response_data, self.response_data)

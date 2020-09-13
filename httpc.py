@@ -1,3 +1,10 @@
+#   python3 httpc.py get -h
+#   python3 httpc.py post -h
+#   python3 httpc.py get -v 'http://httpbin.org/get?course=networking&assignment=1'
+#   python3 httpc.py post -v -header Content-Type:application/json -d '{"Assignment":"1"}' -o 'output.txt' 'http://httpbin.org/post'
+#   python3 httpc.py post -v -header Content-Type:application/json -f 'input.json' -o 'output.txt' 'http://httpbin.org/post'
+#   python3 httpc.py get -v 'http://httpbin.org/redirect/5'
+
 import argparse
 
 from http import http
@@ -8,10 +15,12 @@ user_agent_name = "httpc"
 
 
 class httpc:
-    _userAgent = user_agent_name + "/" + version
+
+    def __init__(self):
+        self._user_agent = user_agent_name + "/" + version
 
     def configure_and_start_http_client(self):
-        http_client = http(self.callback)
+        http_client = http(self.print_response_from_http_client)
 
         url = urlparse(args.URL)
 
@@ -19,7 +28,7 @@ class httpc:
         http_client.set_path = url.path
         http_client.set_port = 80
         http_client.set_request_headers = {"Host": http_client.server}
-        http_client.set_request_headers = {"User-Agent": self._userAgent}
+        http_client.set_request_headers = {"User-Agent": self.user_agent}
         http_client.set_request_type = args.request_type
 
         if url.query:
@@ -47,11 +56,15 @@ class httpc:
         http_client.send_HTTP_request()
 
     @property
-    def userAgent(self):
-        return self._userAgent
+    def user_agent(self):
+        return self._user_agent
 
-    def callback(self, output):
-        print(output)
+    def print_response_from_http_client(self, output_to_console, output_to_file):
+        print(output_to_console)
+        if args.output:
+            file = open(args.output, "w")
+            file.write(output_to_file)
+            file.close()
 
 
 parser = argparse.ArgumentParser(description="httpc is a curl-like application but supports HTTP protocol only.")
@@ -65,6 +78,12 @@ get_parser.add_argument("-v", "--verbose",
 get_parser.add_argument("-header",
                         help="Associates headers to HTTP Request with the format 'key:value'.",
                         default=[], action="append")
+get_parser.add_argument("-o",
+                        dest="output",
+                        action="store",
+                        help="Output body HTTP GET request to file",
+                        default="")
+
 get_parser.add_argument("URL", help="HTTP URL")
 get_parser.set_defaults(request_type="get")
 
@@ -87,7 +106,14 @@ group.add_argument("-f",
                    dest="file",
                    help="Associates the content of a file to the body HTTP POST request.",
                    default="")
+post_parser.add_argument("-o",
+                         dest="output",
+                         action="store",
+                         help="Output body HTTP POST request to file",
+                         default="")
+
 post_parser.add_argument("URL", help="HTTP URL")
+
 post_parser.set_defaults(request_type="post")
 
 args = parser.parse_args()
