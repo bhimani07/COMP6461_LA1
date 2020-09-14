@@ -7,7 +7,7 @@
 
 import argparse
 
-from http import http
+from http_protocol import http
 from urllib.parse import urlparse
 
 version = "1.0"

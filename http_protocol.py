@@ -1,4 +1,6 @@
 import socket
+from io import BytesIO
+from http.client import HTTPResponse
 
 
 def createTCPSocket():
@@ -145,9 +147,9 @@ class http:
         try:
             tcp_socket.connect((self.server, self.port))
             tcp_socket.sendall(self.request.encode("utf-8"))
-            server_response = tcp_socket.recv(2048, socket.MSG_WAITALL)
+            server_response = tcp_socket.recv(4096, socket.MSG_WAITALL)
             self.parse_response(server_response.decode("utf-8"))
-            self.displayResults()
+            self.display_results()
 
         except socket.error as error:
             print("socket connection error: ", error)
@@ -177,13 +179,30 @@ class http:
 
     def parse_response(self, response):
         (headers, json_response) = response.split("\r\n\r\n")
-
         self.set_response = response
         self.set_response_headers = headers
         self.set_response_data = json_response
 
-    def displayResults(self):
+        self.parse_headers(headers)
+
+    def parse_headers(self, headers):
+        headers_bytes = headers.encode()
+        socket_response = Socket(headers_bytes)
+        parsed_headers = HTTPResponse(socket_response)
+        parsed_headers.begin()
+
+        print("status code: ", parsed_headers.status)
+
+    def display_results(self):
         if self._verbosity:
             self.print_response_from_http_client(self.response, self.response_data)
         else:
             self.print_response_from_http_client(self.response_data, self.response_data)
+
+
+class Socket():
+    def __init__(self, response_bytes):
+        self._file = BytesIO(response_bytes)
+
+    def makefile(self, *args, **kwargs):
+        return self._file

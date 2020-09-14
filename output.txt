@@ -6,10 +6,9 @@
   "headers": {
     "Content-Length": "182", 
     "Content-Type": "application/json", 
-    "Cotent-Type": "application/json", 
     "Host": "httpbin.org", 
     "User-Agent": "httpc/1.0", 
-    "X-Amzn-Trace-Id": "Root=1-5f5d83ac-db0b7f7f86c503abe1426280"
+    "X-Amzn-Trace-Id": "Root=1-5f5f9fb8-b0610064f120686a621ab7c6"
   }, 
   "json": {
     "author": "Kishan Bhimani", 
