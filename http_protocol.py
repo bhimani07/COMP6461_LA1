@@ -1,18 +1,23 @@
 import socket
-from io import BytesIO
 from http.client import HTTPResponse
+from io import BytesIO
+
+from bgcolor import BgColor
 
 
-def createTCPSocket():
-    return socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-
-def sendRequest():
-    return None
+def createTCPSocket(timeout):
+    tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    if timeout:
+        tcp_socket.settimeout(timeout)
+        return tcp_socket
+    return tcp_socket
 
 
 class http:
-    http_protocol = "HTTP/1.0"
+    HTTP_PROTOCOL = "HTTP/1.0"
+    MAXIMUM_REDIRECT_LIMIT = 10
+    redirect_counter = 0
+    _redirect_codes = {301, 302}
 
     def __init__(self, print_response_from_http_client):
 
@@ -141,18 +146,22 @@ class http:
     def set_response_data(self, response_data):
         self._response_data = response_data
 
-    def send_HTTP_request(self):
+    @property
+    def redirect_codes(self):
+        return self._redirect_codes
+
+    def send_http_request(self):
         self.generate_request()
-        tcp_socket = createTCPSocket()
         try:
+            tcp_socket = createTCPSocket(10)
             tcp_socket.connect((self.server, self.port))
             tcp_socket.sendall(self.request.encode("utf-8"))
             server_response = tcp_socket.recv(4096, socket.MSG_WAITALL)
-            self.parse_response(server_response.decode("utf-8"))
-            self.display_results()
-
+            self.parse_response_and_display_results(server_response.decode("utf-8"))
+        except socket.timeout as timeoutError:
+            print("Socket Timeout : ", timeoutError)
         except socket.error as error:
-            print("socket connection error: ", error)
+            print("Socket Error : ", error)
 
     def generate_request(self):
         # GET /status/418 HTTP/1.0
@@ -170,34 +179,54 @@ class http:
             self.set_request_query_parameters = "?" + self.request_query_parameters
 
         self.set_request = self.request_type.upper() + " " + self.path + \
-                           self.request_query_parameters + " " + self.http_protocol + " \n" + \
+                           self.request_query_parameters + " " + self.HTTP_PROTOCOL + " \n" + \
                            self.get_request_header_as_string + "\n"
 
         if self.request_type == "post":
             if self.request_body:
                 self.set_request = self.request + self.request_body
 
-    def parse_response(self, response):
+    def parse_response_and_display_results(self, response):
         (headers, json_response) = response.split("\r\n\r\n")
         self.set_response = response
         self.set_response_headers = headers
         self.set_response_data = json_response
 
-        self.parse_headers(headers)
+        response_headers = self.parse_headers(headers)
+        response_status_code = response_headers.status
+
+        self.print_response_from_http_client(
+            BgColor.color_cyan_wrapper("\n" + "Response Status Code => " + str(response_status_code) + "\n"),
+            "Response Status Code => " + str(response_status_code))
+
+        # If response header suggests a redirect.
+        if response_status_code in self.redirect_codes and self.redirect_counter <= self.MAXIMUM_REDIRECT_LIMIT:
+            url = response_headers.Location
+
+            self.redirect_counter = self.redirect_counter + 1
+            self.print_response_from_http_client("Redirecting to Address ===> ", url)
+
+            self.set_server = url.netloc
+            self.set_path = url.path
+            self.set_port = 80
+
+            self.send_http_request()
+        else:
+            self.redirect_counter = 0
+            self.display_results()
 
     def parse_headers(self, headers):
         headers_bytes = headers.encode()
         socket_response = Socket(headers_bytes)
         parsed_headers = HTTPResponse(socket_response)
         parsed_headers.begin()
-
-        print("status code: ", parsed_headers.status)
+        return parsed_headers
 
     def display_results(self):
-        if self._verbosity:
-            self.print_response_from_http_client(self.response, self.response_data)
+        if self.verbosity:
+            self.print_response_from_http_client(BgColor.color_yellow_wrapper(self.response), self.response_data)
         else:
-            self.print_response_from_http_client(self.response_data, self.response_data)
+            self.print_response_from_http_client(BgColor.color_yellow_wrapper(self.response_data), self.response_data)
 
 
 class Socket():

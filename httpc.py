@@ -1,14 +1,15 @@
 #   python3 httpc.py get -h
 #   python3 httpc.py post -h
 #   python3 httpc.py get -v 'http://httpbin.org/get?course=networking&assignment=1'
-#   python3 httpc.py post -v -header Content-Type:application/json -d '{"Assignment":"1"}' -o 'output.txt' 'http://httpbin.org/post'
+#   python3 httpc.py post -v -header Content-Type:application/json -d '{"Name":"Kishan Bhimani", "School":"Concordia University"}' -o 'output.txt' 'http://httpbin.org/post'
 #   python3 httpc.py post -v -header Content-Type:application/json -f 'input.json' -o 'output.txt' 'http://httpbin.org/post'
 #   python3 httpc.py get -v 'http://httpbin.org/redirect/5'
+#   python3  httpc.py post -v -header Content-Type:application/json -d "{title: Test, author: Kishan Bhimani}" "http://posthere.io/a9e6-4b03-8828?status=301"
 
 import argparse
+from urllib.parse import urlparse
 
 from http_protocol import http
-from urllib.parse import urlparse
 
 version = "1.0"
 user_agent_name = "httpc"
@@ -55,7 +56,7 @@ class httpc:
                 if "Content-Length" not in http_client.request_headers.keys():
                     http_client.set_request_headers = {"Content-Length": str(len(http_client.request_body))}
 
-        http_client.send_HTTP_request()
+        http_client.send_http_request()
 
     @property
     def user_agent(self):

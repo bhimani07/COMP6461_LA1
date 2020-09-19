@@ -2,3 +2,4 @@ __pycache__
 http.pyc
 .idea
 .DS_store
+venv
