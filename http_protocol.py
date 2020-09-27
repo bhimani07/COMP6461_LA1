@@ -1,6 +1,7 @@
 import socket
 from http.client import HTTPResponse
 from io import BytesIO
+from urllib.parse import urlparse
 
 from bgcolor import BgColor
 
@@ -175,11 +176,8 @@ class http:
         # x-more-info: http://tools.ietf.org/html/rfc2324
         # Access-Control-Allow-Credentials: true
 
-        if self.request_query_parameters:
-            self.set_request_query_parameters = "?" + self.request_query_parameters
-
         self.set_request = self.request_type.upper() + " " + self.path + \
-                           self.request_query_parameters + " " + self.HTTP_PROTOCOL + " \n" + \
+                           "?" + self.request_query_parameters + " " + self.HTTP_PROTOCOL + " \n" + \
                            self.get_request_header_as_string + "\n"
 
         if self.request_type == "post":
@@ -196,21 +194,26 @@ class http:
         response_status_code = response_headers.status
 
         self.print_response_from_http_client(
-            BgColor.color_cyan_wrapper("\n" + "Response Status Code => " + str(response_status_code) + "\n"),
-            "Response Status Code => " + str(response_status_code))
+            BgColor.color_cyan_wrapper("\n" + "Response Status Code => " + str(response_status_code) + "\n"))
 
         # If response header suggests a redirect.
-        if response_status_code in self.redirect_codes and self.redirect_counter <= self.MAXIMUM_REDIRECT_LIMIT:
-            url = response_headers.Location
+        if response_status_code in self.redirect_codes and self.redirect_counter < self.MAXIMUM_REDIRECT_LIMIT:
+            try:
+                url = response_headers.Location
+                self.redirect_counter = self.redirect_counter + 1
 
-            self.redirect_counter = self.redirect_counter + 1
-            self.print_response_from_http_client("Redirecting to Address ===> ", url)
+                self.print_response_from_http_client(
+                    "Redirecting to Address ===> " + url + " Count: " + str(self.redirect_counter))
 
-            self.set_server = url.netloc
-            self.set_path = url.path
-            self.set_port = 80
+                url = urlparse(url)
+                self.set_server = url.netloc
+                self.set_path = url.path
+                self.set_port = 80
 
-            self.send_http_request()
+                self.send_http_request()
+            except AttributeError as error:
+                self.print_response_from_http_client(
+                    BgColor.color_red_wrapper("\n" + "Error Parsing Redirection Header: " + str(error)))
         else:
             self.redirect_counter = 0
             self.display_results()

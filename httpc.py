@@ -62,12 +62,13 @@ class httpc:
     def user_agent(self):
         return self._user_agent
 
-    def print_response_from_http_client(self, output_to_console, output_to_file):
+    def print_response_from_http_client(self, output_to_console, output_to_file=None):
         print(output_to_console)
-        if args.output:
-            file = open(args.output, "w")
-            file.write(output_to_file)
-            file.close()
+        if output_to_file is not None:
+            if args.output:
+                file = open(args.output, "w")
+                file.write(output_to_file)
+                file.close()
 
 
 parser = argparse.ArgumentParser(description="httpc is a curl-like application but supports HTTP protocol only.")
