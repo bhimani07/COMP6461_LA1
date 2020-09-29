@@ -4,7 +4,7 @@
 #   python3 httpc.py post -v -header Content-Type:application/json -d '{"Name":"Kishan Bhimani", "School":"Concordia University"}' -o 'output.txt' 'http://httpbin.org/post'
 #   python3 httpc.py post -v -header Content-Type:application/json -f 'input.json' -o 'output.txt' 'http://httpbin.org/post'
 #   python3 httpc.py get -v 'http://httpbin.org/redirect/5'
-#   python3  httpc.py post -v -header Content-Type:application/json -d "{title: Test, author: Kishan Bhimani}" "http://posthere.io/a9e6-4b03-8828?status=301"
+#   python3 httpc.py get -v 'http://google.com'
 
 import argparse
 from urllib.parse import urlparse

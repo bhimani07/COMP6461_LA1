@@ -199,7 +199,7 @@ class http:
         # If response header suggests a redirect.
         if response_status_code in self.redirect_codes and self.redirect_counter < self.MAXIMUM_REDIRECT_LIMIT:
             try:
-                url = response_headers.Location
+                url = response_headers.getheader("Location")
                 self.redirect_counter = self.redirect_counter + 1
 
                 self.print_response_from_http_client(
