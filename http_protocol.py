@@ -22,7 +22,6 @@ class http:
 
     def __init__(self, print_response_from_http_client):
 
-        # Server to send request to
         self._server = None
         self._path = None
         self._port = None
@@ -165,17 +164,6 @@ class http:
             print("Socket Error : ", error)
 
     def generate_request(self):
-        # GET /status/418 HTTP/1.0
-        # Host: httpbin.org
-        # HTTP/1.1 418 I'M A TEAPOT
-        # Server: nginx
-        # Date: Sat, 29 Jul 2017 21:58:24 GMT
-        # Content-Length: 135
-        # Connection: close
-        # Access-Control-Allow-Origin: *
-        # x-more-info: http://tools.ietf.org/html/rfc2324
-        # Access-Control-Allow-Credentials: true
-
         self.set_request = self.request_type.upper() + " " + self.path + \
                            "?" + self.request_query_parameters + " " + self.HTTP_PROTOCOL + " \n" + \
                            self.get_request_header_as_string + "\n"
