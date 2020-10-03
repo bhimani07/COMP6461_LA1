@@ -1,9 +1,9 @@
+#   python3 httpc.py -h
 #   python3 httpc.py get -h
 #   python3 httpc.py post -h
 #   python3 httpc.py get -v 'http://httpbin.org/get?course=networking&assignment=1'
 #   python3 httpc.py post -v -header Content-Type:application/json -d '{"Name":"Kishan Bhimani", "School":"Concordia University"}' -o 'output.txt' 'http://httpbin.org/post'
 #   python3 httpc.py post -v -header Content-Type:application/json -f 'input.json' -o 'output.txt' 'http://httpbin.org/post'
-#   python3 httpc.py get -v 'http://httpbin.org/redirect/5'
 #   python3 httpc.py get -v 'http://google.com'
 
 import argparse
